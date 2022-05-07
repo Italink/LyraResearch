@@ -114,7 +114,7 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
 - 显示加载场景的逻辑如下：
 
-  ![image-20220506094423293](resource/image-20220506094423293.png)
+  ![image-20220506094423293](Resource/image-20220506094423293.png)
 
 - 最终，切换场景时将显示以下界面：
 
@@ -122,15 +122,15 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
 > 对于Subsystem，UE会根据反射信息，寻找Subsystem的派生类，并对其初始化：
 >
-> ![image-20220506095125643](resource/image-20220506095125643.png)
+> ![image-20220506095125643](Resource/image-20220506095125643.png)
 
 ###  L_Convolution_Blockout
 
-![image-20220506095742172](resource/image-20220506095742172.png)
+![image-20220506095742172](Resource/image-20220506095742172.png)
 
 > 关卡蓝图中，仅有一个附加粒子的逻辑，且并未生效
 
-<img src="resource/image-20220506102203001.png" alt="image-20220506102203001" style="zoom: 67%;" />
+<img src="Resource/image-20220506102203001.png" alt="image-20220506102203001" style="zoom: 67%;" />
 
 #### Experience
 
@@ -138,9 +138,9 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
 > 其路径为`Lyra/Plugins/GameFeatures/ShooterCore/Content/Experiences/B_LyraShooterGame_ControlPoints`
 
-![image-20220506100821885](resource/image-20220506100821885.png)
+![image-20220506100821885](Resource/image-20220506100821885.png)
 
-![image-20220506110608113](resource/image-20220506110608113.png)
+![image-20220506110608113](Resource/image-20220506110608113.png)
 
 > 可以从上面的Actions看出场景运行时将加载：
 >
@@ -160,7 +160,7 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
 > 位于`Lyra/Plugins/GameFeatures/ShooterCore/Content/ControlPoint/B_ControlPointScoring`
 
-![image-20220506113908951](resource/image-20220506113908951.png)
+![image-20220506113908951](Resource/image-20220506113908951.png)
 
 - 事件说明：
   - **事件开始运行**：开启一个名为Scroing的定时器。
@@ -171,15 +171,15 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
 ##### UI 
 
-![image-20220506110742078](resource/image-20220506110742078.png)
+![image-20220506110742078](Resource/image-20220506110742078.png)
 
 ##### 控制点体积（ControlPointVolume）
 
 > 此Actor蓝图位于`Lyra/Plugins/GameFeatures/ShooterCore/Content/Blueprint/B_ControlPointVolume`，
 
-<img src="resource/image-20220506135622290.png" alt="image-20220506135622290" style="zoom:50%;" />
+<img src="Resource/image-20220506135622290.png" alt="image-20220506135622290" style="zoom:50%;" />
 
-<img src="resource/image-20220506140012978.png" alt="image-20220506140012978" style="zoom:50%;" />
+<img src="Resource/image-20220506140012978.png" alt="image-20220506140012978" style="zoom:50%;" />
 
 - 事件说明：
   - **事件开始运行**：触发事件**RegisterControlPoint**
@@ -191,17 +191,17 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
 该模块的作用是：随机生成男性(Manny)或女性(Quinn)角色。
 
-![image-20220506180327848](resource/image-20220506180327848.png)
+![image-20220506180327848](Resource/image-20220506180327848.png)
 
 > 该蓝图位于：Lyra/Content/Characters/Cosmetics/B_PickRandomCharacter
 
-![image-20220506180122117](resource/image-20220506180122117.png)
+![image-20220506180122117](Resource/image-20220506180122117.png)
 
 其中C++类主要在BeginPlay时做如下操作：
 
-![image-20220506181917671](resource/image-20220506181917671.png)
+![image-20220506181917671](Resource/image-20220506181917671.png)
 
-![image-20220506181843267](resource/image-20220506181843267.png)
+![image-20220506181843267](Resource/image-20220506181843267.png)
 
 > 上述代码的作用是在**BeginPlay**时，将当前的Pawn，或者之后生成的Pawn，应用该蓝图的设置
 
@@ -211,13 +211,13 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
 > 位于`Lyra/Plugins/GameFeatures/ShooterCore/Content/Game/B_TeamSetup_TwoTeams`
 
-![image-20220506173923752](resource/image-20220506173923752.png)
+![image-20220506173923752](Resource/image-20220506173923752.png)
 
 **B_TeamSetup_TwoTeams**继承自C++类**ULyraTeamCreationComponent**，其主要逻辑如下：
 
 > 位于`Lyra\Source\LyraGame\Teams\ULyraTeamCreationComponent.h`
 
-![image-20220506174332136](resource/image-20220506174332136.png)
+![image-20220506174332136](Resource/image-20220506174332136.png)
 
 > 可以看出该代码的作用是：当创建Experience或BeginPlay时，在服务器上根据参数**TeamsToCreate**去生成队伍。
 
@@ -235,7 +235,7 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
 其中主要的操作是：
 
-![image-20220507100211731](resource/image-20220507100211731.png)
+![image-20220507100211731](Resource/image-20220507100211731.png)
 
 > 上述代码的逻辑是：
 >
@@ -245,31 +245,31 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
 该组件提供了接口**ChoosePlayerStart**，该接口将根据所有的**ALyraPlayerStart**挑选Player的出生点
 
-![image-20220507101139822](resource/image-20220507101139822.png)
+![image-20220507101139822](Resource/image-20220507101139822.png)
 
 其中挑选逻辑的位于函数**OnChoosePlayerStart()**中，该函数为虚函数，其中子类**UTDM_PlayerSpawningManagmentComponent**的实现为：
 
-![image-20220507101614873](resource/image-20220507101614873.png)
+![image-20220507101614873](Resource/image-20220507101614873.png)
 
 需要注意的是接口**ChoosePlayerStart**，将由**ALyraGameMode::ChoosePlayerStart_Implementation()**调用，它又是由**GameModeBase**提供的接口：
 
-![image-20220507101830041](resource/image-20220507101830041.png)
+![image-20220507101830041](Resource/image-20220507101830041.png)
 
-![image-20220507101949081](resource/image-20220507101949081.png)
+![image-20220507101949081](Resource/image-20220507101949081.png)
 
 在Lyra中，它的触发时机主要是C++内部调用**AGameModeBase::RestartPlayer(AController* NewPlayer)**，部分用例如下：
 
-> ![image-20220507104208939](resource/image-20220507104208939.png)
+> ![image-20220507104208939](Resource/image-20220507104208939.png)
 >
-> ![image-20220507110024604](resource/image-20220507110024604.png)
+> ![image-20220507110024604](Resource/image-20220507110024604.png)
 >
-> ![image-20220507110129090](resource/image-20220507110129090.png)
+> ![image-20220507110129090](Resource/image-20220507110129090.png)
 
 #### AI生成（ShooterBotSpawner）
 
 蓝图**B_ShooterBotSpawner**有以下参数：
 
-![image-20220507110842131](resource/image-20220507110842131.png)
+![image-20220507110842131](Resource/image-20220507110842131.png)
 
 > 可以看出上面的参数指定了：
 >
@@ -279,7 +279,7 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
 其C++类中的挂载操作为：
 
-![image-20220507111131912](resource/image-20220507111131912.png)
+![image-20220507111131912](Resource/image-20220507111131912.png)
 
 > 可以看出，代码的逻辑是：加载Experience后在服务器上创建对应数量的机器人
 
@@ -289,59 +289,59 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
 - 在如下目录新建Level——**L_MyLevel**
 
-  ![image-20220507142823768](resource/image-20220507142823768.png)
+  ![image-20220507142823768](Resource/image-20220507142823768.png)
 
 - 搭建基础场景
 
-  ![image-20220507111927969](resource/image-20220507111927969.png)
+  ![image-20220507111927969](Resource/image-20220507111927969.png)
 
 - 用网格简单搭建关卡地形，这里简单加了个地板，中间加了个立方体
 
-  ![image-20220507112825731](resource/image-20220507112825731.png)
+  ![image-20220507112825731](Resource/image-20220507112825731.png)
 
 - 在地图的四个角落放置**LyraPlayerStart**
 
   > 注意不是普通的**PlayerStart**，否则Lyra覆盖的WorldSetting将报错：
   >
-  > ![image-20220507113706034](resource/image-20220507113706034.png)
+  > ![image-20220507113706034](Resource/image-20220507113706034.png)
 
-  ![image-20220507113831548](resource/image-20220507113831548.png)
+  ![image-20220507113831548](Resource/image-20220507113831548.png)
 
 #### 测试Experience
 
 - 打开世界场景设置，做如下設置
 
-  ![image-20220507115535741](resource/image-20220507115535741.png)
+  ![image-20220507115535741](Resource/image-20220507115535741.png)
 
   > 如果下拉选项没有，可在如下位置找到：
   >
-  > ![image-20220507115605886](resource/image-20220507115605886.png)
+  > ![image-20220507115605886](Resource/image-20220507115605886.png)
 
 - 启动游戏，能看到如下画面：
 
-  ![image-20220507115109300](resource/image-20220507115109300.png)
+  ![image-20220507115109300](Resource/image-20220507115109300.png)
 
 #### 自定义Experience
 
 - 在文件夹**Plugins\ShooterCore\Experiences**下新建**蓝图类**，继承自C++类**LyraExperienceDefinition**，命名为**B_MyExperience**
 
-  ![image-20220507115919189](resource/image-20220507115919189.png)
+  ![image-20220507115919189](Resource/image-20220507115919189.png)
 
-  ![image-20220507133650264](resource/image-20220507133650264.png)
+  ![image-20220507133650264](Resource/image-20220507133650264.png)
 
 - 构建**MyExperience**
 
   - 添加GameFeature—ShooterCore
 
-    ![image-20220507120253124](resource/image-20220507120253124.png)
+    ![image-20220507120253124](Resource/image-20220507120253124.png)
 
   - 设置Pawn Data
 
-    ![image-20220507133722695](resource/image-20220507133722695.png)
+    ![image-20220507133722695](Resource/image-20220507133722695.png)
 
   - 设置Action Set
 
-    ![image-20220507133819408](resource/image-20220507133819408.png)
+    ![image-20220507133819408](Resource/image-20220507133819408.png)
 
   - 设置Experience的加载操作
 
@@ -349,97 +349,97 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
       > 绑定到HUD中
 
-      ![image-20220507134505054](resource/image-20220507134505054.png)
+      ![image-20220507134505054](Resource/image-20220507134505054.png)
 
     - 添加技能
 
       > 包括角色的血量，伤害，复活机制
 
-      ![image-20220507153319244](resource/image-20220507153319244.png)
+      ![image-20220507153319244](Resource/image-20220507153319244.png)
 
     - 添加组件
 
       - 加入音频管理组件
 
-        ![image-20220507135802602](resource/image-20220507135802602.png)
+        ![image-20220507135802602](Resource/image-20220507135802602.png)
 
       - 加入控制点计分组件
 
-        ![image-20220507140508845](resource/image-20220507140508845.png)
+        ![image-20220507140508845](Resource/image-20220507140508845.png)
 
       - 加入出生点控制组件
 
-        ![image-20220507140530307](resource/image-20220507140530307.png)
+        ![image-20220507140530307](Resource/image-20220507140530307.png)
 
       - 加入团队分组组件
 
         - 新建蓝图类（派生于C++类**LyraTeamCreationComponent**），命名为**B_TeamCreationComponent**
 
-          ![image-20220507141507089](resource/image-20220507141507089.png)
+          ![image-20220507141507089](Resource/image-20220507141507089.png)
 
         - 打开蓝图进行编辑，添加两个队伍（Lyra的游戏机制只允许有两个队伍），且注意标签为1,2
 
-          ![image-20220507160118344](resource/image-20220507160118344.png)
+          ![image-20220507160118344](Resource/image-20220507160118344.png)
 
         - 在MyExperience中添加该组件
 
-          ![image-20220507160228368](resource/image-20220507160228368.png)
+          ![image-20220507160228368](Resource/image-20220507160228368.png)
 
       - 自定义角色模型生成组件
 
         - 新建蓝图类**B_MyCharactorParts**，派生于C++类
 
-          ![image-20220507143804926](resource/image-20220507143804926.png)
+          ![image-20220507143804926](Resource/image-20220507143804926.png)
 
         - 添加Part
 
-          ![image-20220507144208864](resource/image-20220507144208864.png)
+          ![image-20220507144208864](Resource/image-20220507144208864.png)
 
         - 将该组件加入到Experience中
 
-          ![image-20220507150327968](resource/image-20220507150327968.png)
+          ![image-20220507150327968](Resource/image-20220507150327968.png)
 
       - 加入AI生成器
 
-        ![image-20220507150246391](resource/image-20220507150246391.png)
+        ![image-20220507150246391](Resource/image-20220507150246391.png)
 
       - 配置完毕
 
-        ![image-20220507160449263](resource/image-20220507160449263.png)
+        ![image-20220507160449263](Resource/image-20220507160449263.png)
 
 #### 游戏性道具
 
 - 在场景中加入三个控制点
 
-  ![image-20220507161005418](resource/image-20220507161005418.png)
+  ![image-20220507161005418](Resource/image-20220507161005418.png)
 
 - 加入补血包
 
-  ![image-20220507164841529](resource/image-20220507164841529.png)
+  ![image-20220507164841529](Resource/image-20220507164841529.png)
 
 - 加入武器
 
-  ![image-20220507164957163](resource/image-20220507164957163.png)
+  ![image-20220507164957163](Resource/image-20220507164957163.png)
 
 - 加入跳跃点并设置其高度
 
-  ![image-20220507163300383](resource/image-20220507163300383.png)
+  ![image-20220507163300383](Resource/image-20220507163300383.png)
 
 - 加入多个传送门，并指定其传送目标
 
-  ![image-20220507163409377](resource/image-20220507163409377.png)
+  ![image-20220507163409377](Resource/image-20220507163409377.png)
 
 #### AI寻路
 
 加入导航体积，并包裹住场景
 
-![image-20220507165139999](resource/image-20220507165139999.png)
+![image-20220507165139999](Resource/image-20220507165139999.png)
 
-![image-20220507165401681](resource/image-20220507165401681.png)
+![image-20220507165401681](Resource/image-20220507165401681.png)
 
 ### 大功告成
 
-![debug](resource/debug.gif)
+![debug](Resource/debug.gif)
 
 ## 游戏机制
 
