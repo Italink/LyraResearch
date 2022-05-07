@@ -78,7 +78,7 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
 - 点击事件如下：
 
-  ![image-20220505165550940](C:\Users\fuxinghao879\AppData\Roaming\Typora\typora-user-images\image-20220505165550940.png)
+  ![image-20220505165550940](Resource/image-20220505165550940.png)
 
 - 其中加载游戏的主要操作在节点**Quick Play Session**中完成，主要运行步骤如下：
 
