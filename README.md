@@ -4,7 +4,7 @@
 
 > 请结合Lyra的工程代码进行阅读
 >
-> 该文档排版效果：Typora > Gitlab > PDF
+> 该文档排版效果：Typora （Github主题）> Gitlab > PDF
 
 ## 默认配置
 
@@ -401,9 +401,9 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
           ![image-20220507150327968](Resource/image-20220507150327968.png)
 
-      - 加入AI生成器
+      - 加入AI生成器—**B_ShooterBotSpawner_ControlPoint**
 
-        ![image-20220507150246391](Resource/image-20220507150246391.png)
+        ![image-20220507200659364](Resource/image-20220507200659364.png)
 
       - 配置完毕
 
@@ -439,7 +439,11 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
 ![image-20220507165401681](Resource/image-20220507165401681.png)
 
-### 大功告成
+#### 掉落自毁
+
+![image-20220507181043998](Resource/image-20220507181043998.png)
+
+#### 大功告成
 
 ![debug](Resource/debug.gif)
 
@@ -467,16 +471,16 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
   > UE中很多结构都体现了这种插件式的架构思路
 
-### **GameFeature**
+### GameFeature
 
-将游戏机制封装为单独的模块，以插件的形式挂载到游戏主逻辑上，详见：
+将游戏机制封装为单独的模块，详见：
 
-- https://www.zhihu.com/column/insideue4
 - https://www.bilibili.com/video/BV1dL4y1h7YW?spm_id_from=333.337.search-card.all.click
+- https://www.zhihu.com/column/insideue4
 
 > Waiting
 
-### **GameplayAbilitySystem**
+### GameplayAbilitySystem
 
 - https://docs.unrealengine.com/5.0/en-US/gameplay-ability-system-for-unreal-engine/
 
