@@ -2,27 +2,290 @@
 
 # Lyra
 
-> 请结合Lyra的工程代码进行阅读
->
-> 该文档排版效果：Typora （Github主题）> Gitlab > PDF
+> - 推荐打开方式：Typora （Github主题）> Gitlab >  PDF
+> - 推荐阅读方式：略读【工程简析】->跟着【关卡解析】自定义关卡->结合源码，再回头看工程简析。
 
-## 默认配置
+## 工程简析
+
+把Lyra的大致流程简单过了一遍，架构中比较深刻的是：
+
+- Lrya通过覆盖UE默认的**引擎类**，为射击游戏提供了专门的事件及属性插槽，GameFeature中实现射击游戏的核心逻辑，并以插件的形式制作游戏的扩展，最终挂载到游戏主逻辑上。
+
+### 默认类覆盖
 
 在Editor中，可以在项目设置中看到如下默认选项：
 
-![image-20220505115144101](Resource/image-20220505115144101.png)
+![image-20220509120036310](Resource/image-20220509120036310.png)
 
-![image-20220505115347845](Resource/image-20220505115347845.png)
-
-上述配置将影响`Lyra/Config/DefaultEngine.ini`的如下条目：
+上述配置对应`Lyra/Config/DefaultEngine.ini`的条目：
 
 ![image-20220505115701979](Resource/image-20220505115701979.png)
 
-UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMode**的构造函数中绑定了各个状态对应的元类型（StaticClass），之后将根据这些绑定的**StaticClass**使用函数`SpawnActor`创建相应的实例。
+该配置文件将影响引擎工程的构建，UE在执行时会根据配置文件的覆盖原有的引擎类，Lyra中通过覆盖这些引擎默认类来实现自己的项目配置，以GameMode为例：
+
+> **LyraGameMode**的构造函数中绑定了各个状态对应的元类型（StaticClass），之后将根据这些绑定的**StaticClass**使用函数`SpawnActor`创建相应的实例。
 
 ![image-20220505121609346](Resource/image-20220505121609346.png)
 
+### SubSystem
 
+简单点说，SubSystem就是官方推荐的单例方案，相比传统的C++单例，它主要有以下好处：
+
+- 依附在引擎中的已有的单例上（比如GameInstance，Engine，Editor等），SubSystem的生命周期由其同步和维护。
+
+- 无需修改引擎代码，UE预留了接口，在引擎执行时，会根据反射信息得到上述单例的派生类（**DerivedClass**）的元对象（**StaticClass**），创建所有的SubSystem，而SubSystem通过引擎提供的**事件插槽**进行构造并提供接口。
+
+  > UE中很多结构都体现了这种插件式的架构思路
+
+#### 用法及原理
+
+使用时只需继承自对应的SubSystem即可，其中UE支持Subsystem的类有：
+
+- Engine：`UEngineSubsystem`
+- Editor：`UEditorSubsystem`
+- GameInstance：`UGameInstanceSubsystem`
+- World：`UWorldSubsystem`
+- LocalPlayer：`ULocalPlayerSubsystem`
+
+以**UEngineSubsystem**为例：
+
+```C++
+UCLASS()
+class MySubsystem : public UEngineSubsystem{
+    GENERATED_BODY()
+}
+```
+
+而在类**UEngine**的定义中，拥有成员变量：
+
+```c++
+TUniqueObj<FSubsystemCollection<UEngineSubsystem>> EngineSubsystemCollection;
+```
+
+在函数`UEngine::Init()`中，将会调用：
+
+```C++
+EngineSubsystemCollection->Initialize(this);
+```
+
+其中该函数的实现如下：
+
+![image-20220506095125643](Resource/image-20220506095125643.png)
+
+##### 解析
+
+对于支持Subsystem的类，都具有成员变量**FSubsystemCollection**，在类初始化时，将调用函数**FSubsystemCollectionBase::Initialize**，该函数会根据反射信息，创建所有Subsytem的子类。
+
+#### 何时使用
+
+官方的说法是：如果你觉得需要一个Manager，那么这就是使用SubSystem的时机。
+
+#### Lyra使用点
+
+- **UCommonSessionSubsystem** : public UGameInstanceSubsystem
+
+  > 处理托管和加入在线游戏的请求。  
+
+- **UCommonUserSubsystem** : public UGameInstanceSubsystem
+
+  > 处理查询和更改用户身份和登录状态。   
+
+- **UGameplayMessageSubsystem** : public UGameInstanceSubsystem
+
+  > 该系统允许事件引发器和侦听器注册消息，而不必直接了解对方，尽管它们必须就消息的格式(作为USTRUCT()类型)达成一致。  
+
+- **ULyraAudioMixEffectsSubsystem** : public UWorldSubsystem
+
+  > 该子系统旨在自动参与默认和用户控制总线混合，以检索以前保存的用户设置，并将它们应用到激活的用户混合。此外，该子系统将根据用户对HDR音频的偏好自动应用HDR/LDR音频Submix效果链覆盖。Submix效果链覆盖在天琴座音频设置中定义。
+
+- **ULyraContextEffectsSubsystem** : public UWorldSubsystem
+
+- **ULyraExperienceManager** : public UEngineSubsystem
+
+  > 主要用于多个PIE会话之间的仲裁
+
+- **ULyraGamePhaseSubsystem** : public UWorldSubsystem
+
+- **ULyraGlobalAbilitySystem** : public UWorldSubsystem
+
+- **ULyraLoadingScreenSubsystem** : public UGameInstanceSubsystem
+
+  > 用于显示和隐藏Loading界面
+
+- **ULyraPerformanceStatSubsystem** : public UGameInstanceSubsystem
+
+  > 子系统允许访问性能统计数据以进行显示
+
+- **ULyraTeamSubsystem** : public UWorldSubsystem
+
+  > 用于方便地访问基于团队的参与者的团队信息(例如角色状态)
+
+- **UGameUIManagerSubsystem** : public UGameInstanceSubsystem
+
+  - **ULyraUIManagerSubsystem** : public UGameUIManagerSubsystem
+
+- **UCommonMessagingSubsystem** : public ULocalPlayerSubsystem
+
+  - **ULyraUIMessaging** : public UCommonMessagingSubsystem
+
+- **UPocketCaptureSubsystem** : public UWorldSubsystem
+
+- **UPocketLevelSubsystem** : public UWorldSubsystem
+
+- **USubtitleDisplaySubsystem** : public UGameInstanceSubsystem
+
+- **UUIExtensionSubsystem** : public UWorldSubsystem
+
+### PrimaryDataAsset
+
+Lyra中大量使用C++派生**UPrimaryDataAsset**并公开特定的Property，然后在编辑器中派生蓝图进行配置，以供内部C++使用。
+
+#### Lyra使用点
+
+- **ULyraAbilitySet**：定义技能集合，供Lyra内置的GameplayAbilitySystem使用。
+- **ULyraAimSensitivityData**：定义一组对浮点值的手柄灵敏度
+- **ULyraExperienceDefinition**：定义Lyra的GameFeature数据，包括插件列表，Action操作等
+- **ULyraExperienceActionSet**：存放具有关联性的Actions
+- **ULyraGameData**：定义全局游戏数据
+- **ULyraLobbyBackground**：定义Lyra中的加载背景（关卡）
+- **ULyraPawnData**：默认的角色数据，其中包括：角色类的指定，技能集合，标签映射，输入配置，相机模式。定义如下：
+- **ULyraUserFacingExperienceDefinition**：用于在UI中显示体验并开始新会话的设置描述
+
+> 详细的使用过程请仔细查阅下方的**ULyraExperienceDefinition**
+
+### GameFeature
+
+> 提前阅读：
+>
+> https://www.bilibili.com/video/BV1dL4y1h7YW?spm_id_from=333.337.search-card.all.click
+>
+> https://www.zhihu.com/column/insideue4
+
+#### GameFeaturePolicy
+
+Lyra中项目配置中覆盖了GameFeaturePolicy，用于追踪游戏中的内置及外部插件(例如，通过web服务或其他终端)。
+
+![image-20220509121115404](Resource/image-20220509121115404.png)
+
+#### ExperienceDefinition
+
+Lyra中覆盖了引擎的**WorldSetting**，并新增了**ULyraExperienceDefinition**属性，用于配置**GameFeature**及相关的行为
+
+![image-20220505142206317](Resource/image-20220505142206317.png)
+
+其中**ULyraExperienceDefinition**的定义如下：
+
+![image-20220509140822267](Resource/image-20220509140822267.png)
+
+##### 属性说明
+
+- **GameFeaturesToEnable**：需要开启的GameFeature（名称数组）
+
+- **DefaultPawnData**：默认的角色数据，其中包括：角色类的指定，技能集合，标签映射，输入配置，相机模式。定义如下：
+
+  > ![image-20220509141437986](Resource/image-20220509141437986.png)
+
+- **Actions**：单个元素可以是**UGameFeatureAction**的子类，在Lyra的目录`Lyra\Source\LyraGame\GameFeatures`中，派生了许多Action
+
+  > ![image-20220509141958466](Resource/image-20220509141958466.png)
+
+- **ActionSet**：单个元素为  具有关联性的一组Action（包含GameFeature），Lyra中通过使用蓝图派生**ULyraExperienceActionSet**来进行配置
+
+  > ![image-20220509142443796](Resource/image-20220509142443796.png)
+
+##### 配置面板示例
+
+![image-20220509142300804](Resource/image-20220509142300804.png)
+
+#### ULyraExperienceManager
+
+该类仅仅是为了在编辑器模式下处理多个PIE会话
+
+#### ULyraExperienceManagerComponent
+
+**ULyraExperienceDefinition**做数据的定义，**ULyraExperienceManagerComponent**才是真正管理GameFeature的角色
+
+##### 入口点
+
+ULyraExperienceManagerComponent的创建及管理位于**ALyraGameState**中
+
+![image-20220509145029083](Resource/image-20220509145029083.png)
+
+##### Experience加载时机
+
+由**ALyraGameMode**负责加载
+
+![image-20220509145330702](Resource/image-20220509145330702.png)
+
+##### 连锁操作
+
+![image-20220509143328446](Resource/image-20220509143328446.png)
+
+###### 开启GameFeature
+
+![image-20220509144043232](Resource/image-20220509144043232.png)
+
+###### 执行Actions
+
+![image-20220509144348154](Resource/image-20220509144348154.png)
+
+###### Pawn设置
+
+![image-20220509154801020](Resource/image-20220509154801020.png)
+
+### GameplayAbilitySystem
+
+> 请务必提前阅读：
+>
+> - https://docs.unrealengine.com/5.0/en-US/gameplay-ability-system-for-unreal-engine/
+> - [[玩转UE4/UE5动画系统＞技能系统（GAS）篇] 二 技能 Gameplay Ability（GA）](https://zhuanlan.zhihu.com/p/425001766)
+> - [[玩转UE4/UE5动画系统＞技能系统（GAS）篇] 三 影响 Gameplay Effect（GE）](https://zhuanlan.zhihu.com/p/425165414)
+
+#### ULyraGlobalAbilitySystem
+
+- **作用**：监控所有的**ULyraAbilitySystemComponent**（**下文简称ASC**），并对**全体ASC**的**Ability**或**Effect**进行设置。
+
+​	![image-20220509111822600](Resource/image-20220509111822600.png)
+
+- **解析**：上面的代码可以看出**ULyraGlobalAbilitySystem**使用了一种常见的对象监控管理手段：
+
+  > 在对象（创建/初始化/激活）时添加到全局的管理器中（注意添加时会应用当前管理器的设置），在对象（销毁/卸载/休眠）时，从全局管理器中移除，这样可以通过全局管理器对其中的所有对象进行统一操作。
+
+  很明显，**RegisterASC**和**UnregisterASC**将由**ULyraAbilitySystemComponent**在恰当时机调用，这两个函数主要修改的目标是成员变量**RegisteredASCs**
+
+#### ULyraAbilitySystemComponent
+
+> **能力系统组件**( `UAbilitySystemComponent`) 是演员和**游戏能力系统**之间的桥梁。任何打算与 Gameplay 能力系统交互的 Actor 都需要自己的能力系统组件，或访问另一个 Actor 拥有的能力系统组件。
+>
+> 参阅：https://docs.unrealengine.com/5.0/en-US/gameplay-ability-system-component-and-gameplay-attributes-in-unreal-engine/
+
+Lyra中也是覆盖默认的**UAbilitySystemComponent**做了扩展实现。
+
+在源码中拥有**ULyraAbilitySystemComponent**的类型有：
+
+- **ALyraGameState**
+
+- **ALyraPlayerState**
+
+- **ALyraCharacterWithAbilities**
+
+  > **特别注意**
+  >
+  > 虽然**ALyraCharacter**包括了**ULyraPawnExtensionComponent**，它里面有**ULyraAbilitySystemComponent***，但是值为`nullptr`，需要调用函数`ULyraPawnExtensionComponent::InitializeAbilitySystem(ULyraAbilitySystemComponent*, AActor*)`对其进行赋值，Lyra中使用的Character蓝图为**B_Hero_ShooterMannequin**：
+  >
+  > ![image-20220509161305436](Resource/image-20220509161305436.png)
+  >
+  > 它还包括了**ULyraHeroComponent**，其中就包含了以下操作，使用**ALyraPlayerState**中的**ASC**对**PawnExtComp**的**ASC**初始化：
+  >
+  > ![image-20220509161547272](Resource/image-20220509161547272.png)
+
+#### ULyraAbilitySet
+
+> 数据资产
+
+![image-20220509162401672](Resource/image-20220509162401672.png)
+
+#### Waiting...
 
 ## 关卡解析
 
@@ -122,9 +385,7 @@ UE程序执行时将根据配置文件创建对应的蓝图实例，**LyraGameMo
 
   ![image-20220505181151231](Resource/image-20220505181151231.png)
 
-> 对于Subsystem，UE会根据反射信息，寻找Subsystem的派生类，并对其初始化：
->
-> ![image-20220506095125643](Resource/image-20220506095125643.png)
+
 
 ###  L_Convolution_Blockout
 
@@ -455,34 +716,23 @@ Lyra中默认使用**B_TeamSetup_TwoTeams**来定义队伍规模，其蓝图参�
 
 > Waiting
 
-## 架构简析
 
-把Lyra的大致流程简单过了一遍，架构中比较深刻的是：
 
-- Lrya通过覆盖UE默认的**引擎类**，为射击游戏提供了专门的事件及属性插槽，GameFeature中实现射击游戏的核心逻辑，并以插件的形式制作游戏的扩展，最终挂载到游戏主逻辑上。
 
-### SubSystem
 
-简单点说，SubSystem就是官方推荐的单例方案，相比传统的C++单例，它主要有以下好处：
 
-- 依附在引擎中的已有的单例上（比如GameInstance，Engine，Editor等），SubSystem的生命周期由其同步和维护。
 
-- 无需修改引擎代码，引擎执行时，会根据反射信息得到上述单例的派生类（**DerivedClass**）的元对象（**StaticClass**），创建所有的SubSystem，而SubSystem通过引擎提供的**事件插槽**进行构造并提供接口。
 
-  > UE中很多结构都体现了这种插件式的架构思路
 
-### GameFeature
 
-将游戏机制封装为单独的模块，详见：
 
-- https://www.bilibili.com/video/BV1dL4y1h7YW?spm_id_from=333.337.search-card.all.click
-- https://www.zhihu.com/column/insideue4
 
-> Waiting
 
-### GameplayAbilitySystem
 
-- https://docs.unrealengine.com/5.0/en-US/gameplay-ability-system-for-unreal-engine/
 
-> Waiting
+
+
+
+
+
 
